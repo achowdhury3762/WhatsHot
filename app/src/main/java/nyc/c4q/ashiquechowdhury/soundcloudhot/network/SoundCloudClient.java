@@ -8,6 +8,7 @@ import io.reactivex.Observable;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.BuildConfig;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.SoundCloudApi;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.Track;
+import nyc.c4q.ashiquechowdhury.soundcloudhot.model.User;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.UserList;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -36,11 +37,15 @@ public class SoundCloudClient {
         api = retrofit.create(SoundCloudApi.class);
     }
 
-    public Observable<UserList> getFollowersFromId(int id){
+    public Observable<UserList> getFollowersFromId(int id) {
         return api.getFollowers(id, BuildConfig.CLIENT_ID);
     }
 
-    public Observable<List<Track>> getTrackListFromId(int id){
+    public Observable<List<Track>> getTrackListFromId(int id) {
         return api.getFavorites(id, BuildConfig.CLIENT_ID);
+    }
+
+    public Observable<List<User>> getUsers(String userNameQuery) {
+        return api.getUsers(userNameQuery, BuildConfig.CLIENT_ID);
     }
 }

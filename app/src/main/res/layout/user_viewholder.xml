@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/left_margin"
+    android:layout_marginBottom="@dimen/left_margin">
+    <ImageView
+        android:padding="1dp"
+        android:background="@drawable/gray_border"
+        android:id="@+id/user_profile_image"
+        android:layout_width="@dimen/square_rview_size"
+        android:layout_height="@dimen/square_rview_size" />
+    <TextView
+        android:id="@+id/username_tview"
+        android:paddingLeft="@dimen/text_padding_rview"
+        android:paddingRight="@dimen/text_padding_rview"
+        android:layout_marginTop="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/followers_count_tview"
+        android:paddingLeft="@dimen/text_padding_rview"
+        android:paddingRight="@dimen/text_padding_rview"
+        android:layout_marginTop="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

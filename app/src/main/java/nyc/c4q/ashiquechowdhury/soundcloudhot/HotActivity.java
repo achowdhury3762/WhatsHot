@@ -2,6 +2,8 @@ package nyc.c4q.ashiquechowdhury.soundcloudhot;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import nyc.c4q.ashiquechowdhury.soundcloudhot.network.SoundCloudClient;
 public class HotActivity extends AppCompatActivity {
     private SoundCloudClient soundCloudClient;
     private List<Track> trackList;
+    private List<User> userList;
+    private UserAdapter userAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +34,42 @@ public class HotActivity extends AppCompatActivity {
 
         soundCloudClient = SoundCloudClient.getInstance();
         trackList = new ArrayList<>();
+        userList = new ArrayList<>();
+        userAdapter = new UserAdapter(userList);
+        RecyclerView userRecyclerList = (RecyclerView) findViewById(R.id.user_recycler);
+        userRecyclerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        userRecyclerList.setAdapter(userAdapter);
 
-        Observable<UserList> followerList = soundCloudClient.getFollowersFromId(1);
-        Observable<User> topTwentyFollowers = getTopNFollowers(20, followerList);
+
+        Observable<List<User>> soundCloudUsers = soundCloudClient.getUsers("");
+        soundCloudUsers
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<User>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull List<User> soundCloudUsers) {
+                        userAdapter.setUserList(soundCloudUsers);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.d("Showing Thirty Users", e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
+        Observable<UserList> soundCloudFollowers = soundCloudClient.getFollowersFromId(1);
+        Observable<User> topTwentyFollowers = getTopNUsers(20, soundCloudFollowers);
 
         getUserIds(topTwentyFollowers)
                 .flatMap(new Function<Integer, Observable<List<Track>>>() {
@@ -77,7 +114,7 @@ public class HotActivity extends AppCompatActivity {
                 });
     }
 
-    public Observable<User> getTopNFollowers(int value, Observable<UserList> userList) {
+    public Observable<User> getTopNUsers(int value, Observable<UserList> userList) {
         return userList
                 .map(new Function<UserList, List<User>>() {
                     @Override
@@ -93,5 +130,4 @@ public class HotActivity extends AppCompatActivity {
                 })
                 .take(value);
     }
-
 }
