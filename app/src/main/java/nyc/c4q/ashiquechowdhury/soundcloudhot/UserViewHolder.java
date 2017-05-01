@@ -17,9 +17,9 @@ class UserViewHolder extends RecyclerView.ViewHolder {
     public UserViewHolder(View itemView) {
         super(itemView);
 
-        userProfileImageV = (ImageView) itemView.findViewById(R.id.user_profile_image);
-        usernameTextV = (TextView) itemView.findViewById(R.id.username_tview);
-        followersCountTextV = (TextView) itemView.findViewById(R.id.followers_count_tview);
+        userProfileImageV = (ImageView) itemView.findViewById(R.id.box_image);
+        usernameTextV = (TextView) itemView.findViewById(R.id.box_upper_tview);
+        followersCountTextV = (TextView) itemView.findViewById(R.id.box_lower_tview);
     }
 
     public void bind(User user) {

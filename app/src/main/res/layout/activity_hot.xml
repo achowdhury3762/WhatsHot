@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="nyc.c4q.ashiquechowdhury.soundcloudhot.HotActivity"
     android:layout_height="match_parent"
+    android:paddingBottom="10dp"
     android:layout_width="match_parent">
     <LinearLayout
         android:orientation="vertical"
@@ -77,12 +78,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/track_recycler"
+                <RelativeLayout
                     android:layout_weight="3"
                     android:layout_width="match_parent"
                     android:layout_height="0dp">
-                </android.support.v7.widget.RecyclerView>
+                    <ProgressBar
+                        android:id="@+id/progress_bar"
+                        android:layout_centerInParent="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/track_recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    </android.support.v7.widget.RecyclerView>
+                </RelativeLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>

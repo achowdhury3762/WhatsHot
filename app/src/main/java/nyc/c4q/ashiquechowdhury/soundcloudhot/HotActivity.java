@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -37,6 +39,8 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
     private UserAdapter userAdapter;
     private TrackAdapter trackAdapter;
 
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
     @BindView(R.id.user_input)
     EditText userInputName;
     @BindView(R.id.user_recycler)
@@ -53,8 +57,10 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
         setContentView(R.layout.activity_hot);
 
         unBinder = ButterKnife.bind(this);
+        progressBar.setVisibility(View.INVISIBLE);
         soundCloudClient = SoundCloudClient.getInstance();
 
+        trackList = new ArrayList<>();
         trackAdapter = new TrackAdapter(trackList);
         trackRecyclerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         trackRecyclerList.setAdapter(trackAdapter);
@@ -179,6 +185,7 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
     }
 
     private void loadTracksFromUserId(int id) {
+        progressBar.setVisibility(View.VISIBLE);
         trackList = new ArrayList<>();
         Observable<UserList> soundCloudFollowers = soundCloudClient.getFollowersFromId(id);
         Observable<User> topTwentyFollowers = getTopNUsers(20, soundCloudFollowers);
@@ -206,6 +213,7 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
 
                     @Override
                     public void onComplete() {
+                        progressBar.setVisibility(View.INVISIBLE);
                         trackAdapter.setTrackList(trackList);
                     }
                 }));

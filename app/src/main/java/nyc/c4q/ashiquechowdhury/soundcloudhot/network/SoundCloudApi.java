@@ -1,4 +1,4 @@
-package nyc.c4q.ashiquechowdhury.soundcloudhot;
+package nyc.c4q.ashiquechowdhury.soundcloudhot.network;
 
 import java.util.List;
 

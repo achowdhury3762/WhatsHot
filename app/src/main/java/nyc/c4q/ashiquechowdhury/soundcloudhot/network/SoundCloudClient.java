@@ -6,7 +6,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.BuildConfig;
-import nyc.c4q.ashiquechowdhury.soundcloudhot.SoundCloudApi;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.Track;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.User;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.UserList;
