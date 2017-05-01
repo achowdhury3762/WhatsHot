@@ -33,6 +33,8 @@ import nyc.c4q.ashiquechowdhury.soundcloudhot.network.SoundCloudClient;
 
 public class HotActivity extends AppCompatActivity implements UserPressedListener {
     private static final long ONE_SECOND = 1000L;
+    private static final String USER_ID_KEY = "nyc.c4q.ashiquechowdhury.USER_ID_KEY";
+    private int currentUserId;
     private SoundCloudClient soundCloudClient;
     private List<Track> trackList;
     private List<User> userList;
@@ -172,6 +174,12 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        loadTracksFromUserId(savedInstanceState.getInt(USER_ID_KEY));
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onDestroy() {
         unBinder.unbind();
         compositeDisposable.dispose();
@@ -181,6 +189,7 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
 
     @Override
     public void onUserPressed(User user) {
+        currentUserId = user.getId();
         loadTracksFromUserId(user.getId());
     }
 
@@ -217,5 +226,11 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
                         trackAdapter.setTrackList(trackList);
                     }
                 }));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(USER_ID_KEY, currentUserId);
+        super.onSaveInstanceState(outState);
     }
 }
