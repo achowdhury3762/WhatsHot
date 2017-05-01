@@ -45,6 +45,7 @@ public class HotActivity extends AppCompatActivity implements HotView, UserAdapt
     private TrackAdapter trackAdapter;
     private Unbinder unBinder;
     private HotModel hotModel;
+    private HotPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +54,11 @@ public class HotActivity extends AppCompatActivity implements HotView, UserAdapt
 
         init();
         hotModel = new HotModel();
-        hotPresenter = new HotPresenter(hotModel, this);
+        setPresenter(new HotPresenter(hotModel, this));
         Observable<String> textChanges = createTextChangeObservable(userInputName, ONE_SECOND, TimeUnit.MILLISECONDS);
         hotPresenter.getUserList(textChanges);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             hotPresenter.fillInitialUserList();
         }
     }
@@ -138,5 +139,9 @@ public class HotActivity extends AppCompatActivity implements HotView, UserAdapt
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(USER_ID_KEY, currentUserId);
         super.onSaveInstanceState(outState);
+    }
+
+    public void setPresenter(HotPresenter presenter) {
+        this.presenter = presenter;
     }
 }
