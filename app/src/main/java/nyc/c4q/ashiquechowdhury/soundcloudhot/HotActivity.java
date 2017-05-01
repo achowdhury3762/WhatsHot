@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,27 +18,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.Track;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.User;
-import nyc.c4q.ashiquechowdhury.soundcloudhot.model.UserList;
-import nyc.c4q.ashiquechowdhury.soundcloudhot.network.SoundCloudClient;
+import nyc.c4q.ashiquechowdhury.soundcloudhot.vhadapter.TrackAdapter;
+import nyc.c4q.ashiquechowdhury.soundcloudhot.vhadapter.UserAdapter;
 
-public class HotActivity extends AppCompatActivity implements UserPressedListener {
-    private static final long ONE_SECOND = 1000L;
-    private static final String USER_ID_KEY = "nyc.c4q.ashiquechowdhury.USER_ID_KEY";
-    private int currentUserId;
-    private SoundCloudClient soundCloudClient;
-    private List<Track> trackList;
-    private List<User> userList;
-    private UserAdapter userAdapter;
-    private TrackAdapter trackAdapter;
+public class HotActivity extends AppCompatActivity implements HotView, UserAdapter.UserPressedListener {
+    private static final String USER_ID_KEY = "nyc.c4q.ashiquechowdhury.USER_ID";
+    private static final long ONE_SECOND = 1000;
+    private int currentUserId = 0;
+    private HotPresenter hotPresenter;
 
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
@@ -50,31 +41,25 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
     @BindView(R.id.track_recycler)
     RecyclerView trackRecyclerList;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private UserAdapter userAdapter;
+    private TrackAdapter trackAdapter;
     private Unbinder unBinder;
+    private HotModel hotModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hot);
 
-        unBinder = ButterKnife.bind(this);
-        progressBar.setVisibility(View.INVISIBLE);
-        soundCloudClient = SoundCloudClient.getInstance();
-
-        trackList = new ArrayList<>();
-        trackAdapter = new TrackAdapter(trackList);
-        trackRecyclerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        trackRecyclerList.setAdapter(trackAdapter);
-
-        userList = new ArrayList<>();
-        userAdapter = new UserAdapter(userList, this);
-        userRecyclerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        userRecyclerList.setAdapter(userAdapter);
-
-        fillUserView();
+        init();
+        hotModel = new HotModel();
+        hotPresenter = new HotPresenter(hotModel, this);
         Observable<String> textChanges = createTextChangeObservable(userInputName, ONE_SECOND, TimeUnit.MILLISECONDS);
-        makeSearchBarNetworkRequests(textChanges);
+        hotPresenter.getUserList(textChanges);
+
+        if(savedInstanceState == null) {
+            hotPresenter.fillInitialUserList();
+        }
     }
 
     private Observable<String> createTextChangeObservable(EditText userInputName, long timeBetween, TimeUnit unitOfTime) {
@@ -92,140 +77,61 @@ public class HotActivity extends AppCompatActivity implements UserPressedListene
                         return charSequence.toString();
                     }
                 });
-
     }
 
-    private void makeSearchBarNetworkRequests(Observable<String> textObserver) {
-              compositeDisposable.add(textObserver
-                        .flatMap(new Function<String, Observable<List<User>>>() {
-                            @Override
-                            public Observable<List<User>> apply(@NonNull String user) throws Exception {
-                                return soundCloudClient.getUsers(user);
-                            }
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableObserver<List<User>>() {
-                            @Override
-                            public void onNext(@NonNull List<User> users) {
-                                userAdapter.setUserList(users);
-                            }
+    private void init() {
+        unBinder = ButterKnife.bind(this);
+        progressBar.setVisibility(View.INVISIBLE);
 
-                            @Override
-                            public void onError(@NonNull Throwable e) {
-                                Log.d("Showing Thirty Users", e.getMessage());
-                            }
-
-                            @Override
-                            public void onComplete() {
-
-                            }
-                        }));
+        trackRecyclerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        userRecyclerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
 
-    private void fillUserView() {
-        Observable<List<User>> soundCloudUsers = soundCloudClient.getUsers("");
-        compositeDisposable.add(soundCloudUsers
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<User>>() {
-                    @Override
-                    public void onNext(@NonNull List<User> soundCloudUsers) {
-                        userAdapter.setUserList(soundCloudUsers);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d("Showing Thirty Users", e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                }));
+    @Override
+    public void showLoading() {
+        progressBar.setVisibility(View.VISIBLE);
     }
 
-    private Observable<Integer> getUserIds(Observable<User> topTwentyFollowers) {
-        return topTwentyFollowers
-                .map(new Function<User, Integer>() {
-                    @Override
-                    public Integer apply(@NonNull User user) throws Exception {
-                        return user.getId();
-                    }
-                });
+    @Override
+    public void hideLoading() {
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
-    public Observable<User> getTopNUsers(int value, Observable<UserList> userList) {
-        return userList
-                .map(new Function<UserList, List<User>>() {
-                    @Override
-                    public List<User> apply(@NonNull UserList userList) throws Exception {
-                        return userList.getCollection();
-                    }
-                })
-                .flatMapIterable(new Function<List<User>, Iterable<? extends User>>() {
-                    @Override
-                    public Iterable<? extends User> apply(@NonNull List<User> users) throws Exception {
-                        return users;
-                    }
-                })
-                .take(value);
+    @Override
+    public void showListError(String error) {
+        Log.d("Error", error);
+    }
+
+    @Override
+    public void showTrackList(List<Track> myList) {
+        trackAdapter = new TrackAdapter(myList);
+        trackRecyclerList.setAdapter(trackAdapter);
+    }
+
+    @Override
+    public void showUserList(List<User> userList) {
+        userAdapter = new UserAdapter(userList, this);
+        userRecyclerList.setAdapter(userAdapter);
+    }
+
+    @Override
+    public void onUserPressed(User user) {
+        currentUserId = user.getId();
+        hotPresenter.getTrackList(user.getId());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        loadTracksFromUserId(savedInstanceState.getInt(USER_ID_KEY));
+        hotPresenter.getTrackList(savedInstanceState.getInt(USER_ID_KEY));
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onDestroy() {
         unBinder.unbind();
-        compositeDisposable.dispose();
+        hotPresenter.onStop();
 
         super.onDestroy();
-    }
-
-    @Override
-    public void onUserPressed(User user) {
-        currentUserId = user.getId();
-        loadTracksFromUserId(user.getId());
-    }
-
-    private void loadTracksFromUserId(int id) {
-        progressBar.setVisibility(View.VISIBLE);
-        trackList = new ArrayList<>();
-        Observable<UserList> soundCloudFollowers = soundCloudClient.getFollowersFromId(id);
-        Observable<User> topTwentyFollowers = getTopNUsers(20, soundCloudFollowers);
-
-        compositeDisposable.add(getUserIds(topTwentyFollowers)
-                .flatMap(new Function<Integer, Observable<List<Track>>>() {
-                    @Override
-                    public Observable<List<Track>> apply(@NonNull Integer userId) throws Exception {
-                        return soundCloudClient.getTrackListFromId(userId);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(Observable.<List<Track>>empty())
-                .subscribeWith(new DisposableObserver<List<Track>>() {
-                    @Override
-                    public void onNext(@NonNull List<Track> tracks) {
-                        trackList.addAll(tracks);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d("User Liked Tracks", e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        trackAdapter.setTrackList(trackList);
-                    }
-                }));
     }
 
     @Override

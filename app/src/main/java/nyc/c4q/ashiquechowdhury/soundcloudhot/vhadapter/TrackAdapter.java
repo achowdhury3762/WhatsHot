@@ -1,4 +1,4 @@
-package nyc.c4q.ashiquechowdhury.soundcloudhot;
+package nyc.c4q.ashiquechowdhury.soundcloudhot.vhadapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,9 +7,10 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import nyc.c4q.ashiquechowdhury.soundcloudhot.R;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.Track;
 
-class TrackAdapter extends RecyclerView.Adapter<TrackViewHolder> {
+public class TrackAdapter extends RecyclerView.Adapter<TrackViewHolder> {
     private List<Track> trackList;
 
     public TrackAdapter(List<Track> trackList) {

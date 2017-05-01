@@ -1,4 +1,4 @@
-package nyc.c4q.ashiquechowdhury.soundcloudhot;
+package nyc.c4q.ashiquechowdhury.soundcloudhot.vhadapter;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import nyc.c4q.ashiquechowdhury.soundcloudhot.R;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.User;
 
 public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
@@ -46,5 +47,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
     public void setUserList(List<User> userList) {
         this.userList = userList;
         notifyDataSetChanged();
+    }
+
+    public interface UserPressedListener {
+        void onUserPressed(User user);
     }
 }

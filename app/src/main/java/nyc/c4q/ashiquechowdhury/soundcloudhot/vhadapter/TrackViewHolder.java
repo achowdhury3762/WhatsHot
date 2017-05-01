@@ -1,4 +1,4 @@
-package nyc.c4q.ashiquechowdhury.soundcloudhot;
+package nyc.c4q.ashiquechowdhury.soundcloudhot.vhadapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import nyc.c4q.ashiquechowdhury.soundcloudhot.R;
 import nyc.c4q.ashiquechowdhury.soundcloudhot.model.Track;
 
 
