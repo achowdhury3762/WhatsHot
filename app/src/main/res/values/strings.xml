@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">SoundCloudHot</string>
     <string name="search_bar_hint">Search For A User</string>
-    <string name="upper_box_label">Reccomended Users</string>
+    <string name="upper_box_label">Recommended Users</string>
+    <string name="bottom_box_label">Recommended Tracks Based From User</string>
 </resources>

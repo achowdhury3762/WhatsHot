@@ -7,18 +7,18 @@
     <ImageView
         android:padding="1dp"
         android:background="@drawable/gray_border"
-        android:id="@+id/user_profile_image"
+        android:id="@+id/box_image"
         android:layout_width="@dimen/square_rview_size"
         android:layout_height="@dimen/square_rview_size" />
     <TextView
-        android:id="@+id/username_tview"
+        android:id="@+id/box_upper_tview"
         android:paddingLeft="@dimen/text_padding_rview"
         android:paddingRight="@dimen/text_padding_rview"
         android:layout_marginTop="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
-        android:id="@+id/followers_count_tview"
+        android:id="@+id/box_lower_tview"
         android:paddingLeft="@dimen/text_padding_rview"
         android:paddingRight="@dimen/text_padding_rview"
         android:layout_marginTop="4dp"
