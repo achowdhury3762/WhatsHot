@@ -45,7 +45,6 @@ public class HotActivity extends AppCompatActivity implements HotView, UserAdapt
     private TrackAdapter trackAdapter;
     private Unbinder unBinder;
     private HotModel hotModel;
-    private HotPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +141,6 @@ public class HotActivity extends AppCompatActivity implements HotView, UserAdapt
     }
 
     public void setPresenter(HotPresenter presenter) {
-        this.presenter = presenter;
+        this.hotPresenter = presenter;
     }
 }
